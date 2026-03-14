@@ -1,0 +1,174 @@
+/* CSS Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color Palette */
+  --bg-primary: #050a14;
+  --bg-secondary: #0a1628;
+  --accent-blue: #00d4ff;
+  --accent-purple: #7c3aed;
+  --text-primary: #e2e8f0;
+  --text-muted: #64748b;
+
+  /* Typography */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-blue);
+}
+
+/* ── App Layout ───────────────────────────────────────────────────────────── */
+.app-root {
+  position: relative;
+  min-height: 100vh;
+}
+
+.offline-banner {
+  position: fixed;
+  top: 64px;
+  width: 100%;
+  background: #451a03;
+  color: #fed7aa;
+  text-align: center;
+  padding: 8px;
+  font-size: 0.85rem;
+  z-index: 99;
+  font-family: var(--font-body);
+}
+
+.main-layout {
+  position: relative;
+  z-index: 1;
+  padding-top: 80px;
+  padding-bottom: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-areas: "sidebar content";
+  gap: 24px;
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.content {
+  grid-area: content;
+}
+
+@media (max-width: 1024px) {
+  .main-layout {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: "sidebar" "content";
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .sidebar {
+    overflow-x: auto;
+  }
+  header .nav-label {
+    display: none;
+  }
+}
