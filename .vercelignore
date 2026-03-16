@@ -1,0 +1,25 @@
+# Vercel ignore – keeps deployment bundle lean
+# ─────────────────────────────────────────────
+# Development artefacts
+node_modules
+.git
+.github
+
+# Backend source is embedded via api/index.ts imports, not deployed standalone
+backend/node_modules
+backend/dist
+backend/.env
+
+# Frontend raw source (Vercel uses the built dist/ output)
+frontend/node_modules
+frontend/src
+frontend/.env.local
+frontend/tsconfig*.json
+frontend/vite.config.ts
+frontend/index.html
+
+# Test files
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+jest.config.ts
