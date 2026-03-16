@@ -13,12 +13,16 @@ const PULSE_CSS = `
 `;
 
 const NAV_ITEMS = [
-  { label: 'APOD', sub: 'Picture of the Day', active: true },
-  { label: 'Mars Rover', sub: 'Rover Photos',      active: false },
-  { label: 'NeoWs',      sub: 'Near-Earth Objects', active: false },
+  { label: 'APOD',  sub: 'Picture of the Day',  hash: '#/'       },
+  { label: 'NeoWs', sub: 'Near-Earth Objects',  hash: '#/neows'  },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  currentRoute: string;
+  onNavigate: (route: string) => void;
+}
+
+export default function Header({ currentRoute, onNavigate }: HeaderProps) {
   return (
     <>
       <style>{PULSE_CSS}</style>
@@ -94,50 +98,59 @@ export default function Header() {
             gap: '0.25rem',
           }}
         >
-          {NAV_ITEMS.map(({ label, sub, active }) => (
-            <div
-              key={label}
-              title={active ? undefined : 'Coming Soon'}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                cursor: active ? 'pointer' : 'not-allowed',
-                opacity: active ? 1 : 0.35,
-                transition: 'background 150ms ease',
-                lineHeight: 1.25,
-              }}
-            >
-              <span
-                className="nav-label"
+          {NAV_ITEMS.map(({ label, sub, hash }) => {
+            const route = hash.replace('#', '') || '/';
+            const active = currentRoute === route;
+            return (
+              <div
+                key={label}
+                onClick={() => onNavigate(route)}
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
-                  color: active ? 'var(--accent-blue)' : 'var(--text-muted)',
-                  textDecoration: active ? 'underline' : 'none',
-                  textDecorationColor: 'rgba(0,212,255,0.4)',
-                  textUnderlineOffset: '3px',
-                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-end',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  opacity: 1,
+                  transition: 'background 150ms ease',
+                  lineHeight: 1.25,
+                  background: active ? 'rgba(0,212,255,0.08)' : 'transparent',
+                }}
+                onMouseEnter={e => {
+                  if (!active) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.background = active ? 'rgba(0,212,255,0.08)' : 'transparent';
                 }}
               >
-                {label}
-              </span>
-              <span
-                className="nav-label"
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.65rem',
-                  color: 'var(--text-muted)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {sub}
-              </span>
-            </div>
-          ))}
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 600,
+                    fontSize: '0.8rem',
+                    color: active ? 'var(--accent-blue)' : 'var(--text-muted)',
+                    textDecoration: active ? 'underline' : 'none',
+                    textDecorationColor: 'rgba(0,212,255,0.4)',
+                    textUnderlineOffset: '3px',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {label}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.65rem',
+                    color: 'var(--text-muted)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {sub}
+                </span>
+              </div>
+            );
+          })}
         </nav>
       </motion.header>
     </>

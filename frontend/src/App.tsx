@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 
@@ -8,10 +8,18 @@ import DateSelector from './components/DateSelector';
 import APODViewer from './components/APODViewer';
 import MissionBriefing from './components/MissionBriefing';
 import Toast from './components/Toast';
+import NeoWs from './components/NeoWs';
 
 import { useAPOD } from './hooks/useAPOD';
 import { useBriefing } from './hooks/useBriefing';
 import { DateMode } from './types/apod';
+
+// ── Hash-based routing helpers ────────────────────────────────────────────────
+function getRouteFromHash(): string {
+  const hash = window.location.hash;
+  if (!hash || hash === '#' || hash === '#/') return '/';
+  return hash.replace(/^#/, '') || '/';
+}
 
 // ── Toast state type ──────────────────────────────────────────────────────────
 interface ToastState {
@@ -28,6 +36,21 @@ export default function App() {
   const [dateMode, setDateMode] = useState<DateMode>('day');
   const [toast, setToast] = useState<ToastState>({ message: null, type: 'success' });
   const [offline, setOffline] = useState<boolean>(false);
+  const [currentRoute, setCurrentRoute] = useState<string>(getRouteFromHash);
+
+  // ── Hash routing: listen for back/forward navigation ──
+  useEffect(() => {
+    const onHashChange = () => setCurrentRoute(getRouteFromHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  // ── Navigate without full reload ──
+  const navigate = useCallback((route: string) => {
+    const newHash = route === '/' ? '#/' : `#${route}`;
+    window.location.hash = newHash;
+    setCurrentRoute(route);
+  }, []);
 
   // ── Data hooks ──
   const { data: apod, loading, error } = useAPOD(selectedDate);
@@ -83,7 +106,7 @@ export default function App() {
   return (
     <div className="app-root">
       <SpaceBackground />
-      <Header />
+      <Header currentRoute={currentRoute} onNavigate={navigate} />
 
       {offline && (
         <div className="offline-banner">
@@ -92,33 +115,41 @@ export default function App() {
       )}
 
       <main className="main-layout">
-        <aside className="sidebar">
-          <DateSelector
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-            dateMode={dateMode}
-            onModeChange={setDateMode}
-          />
-        </aside>
+        {currentRoute === '/neows' ? (
+          <section className="content" style={{ width: '100%' }}>
+            <NeoWs />
+          </section>
+        ) : (
+          <>
+            <aside className="sidebar">
+              <DateSelector
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+                dateMode={dateMode}
+                onModeChange={setDateMode}
+              />
+            </aside>
 
-        <section className="content">
-          <APODViewer
-            apod={apod}
-            loading={loading}
-            error={error?.message ?? null}
-            onGenerateBriefing={generate}
-            briefingLoading={briefingLoading}
-          />
+            <section className="content">
+              <APODViewer
+                apod={apod}
+                loading={loading}
+                error={error?.message ?? null}
+                onGenerateBriefing={generate}
+                briefingLoading={briefingLoading}
+              />
 
-          {(briefing || briefingLoading || !!briefingError) && (
-            <MissionBriefing
-              briefing={briefing}
-              loading={briefingLoading}
-              error={briefingError?.message ?? null}
-              onRegenerate={generate}
-            />
-          )}
-        </section>
+              {(briefing || briefingLoading || !!briefingError) && (
+                <MissionBriefing
+                  briefing={briefing}
+                  loading={briefingLoading}
+                  error={briefingError?.message ?? null}
+                  onRegenerate={generate}
+                />
+              )}
+            </section>
+          </>
+        )}
       </main>
 
       <AnimatePresence>
