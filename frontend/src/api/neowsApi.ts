@@ -10,19 +10,12 @@ import {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const API_KEY  = 'DEMO_KEY';
-const BASE_URL = 'https://api.nasa.gov/neo/rest/v1';
+const BASE_URL = '/api/neows';
 const TIMEOUT  = 15000;
 
 // ── Normalisation helpers ─────────────────────────────────────────────────────
 
-/**
- * Convert a raw asteroid + its approach date key into the flat NeoWsAsteroid
- * shape used by the UI.  Uses the first entry in close_approach_data that
- * matches the given date, or falls back to the first entry overall.
- */
 function normaliseAsteroid(raw: NeoWsRawAsteroid, date: string): NeoWsAsteroid {
-  // Prefer approach data on the queried date; fall back to index 0
   const approach =
     raw.close_approach_data.find((a) => a.close_approach_date === date) ??
     raw.close_approach_data[0];
@@ -42,10 +35,6 @@ function normaliseAsteroid(raw: NeoWsRawAsteroid, date: string): NeoWsAsteroid {
   };
 }
 
-/**
- * Convert a raw asteroid into the lightweight summary shape used in browse
- * listings.
- */
 function normaliseAsteroidSummary(raw: NeoWsRawAsteroid): NeoWsAsteroidSummary {
   return {
     id:                     raw.id,
@@ -59,23 +48,13 @@ function normaliseAsteroidSummary(raw: NeoWsRawAsteroid): NeoWsAsteroidSummary {
 
 // ── 1. fetchNeoFeed ───────────────────────────────────────────────────────────
 
-/**
- * Fetch near-Earth objects for a date range from the NeoWs feed endpoint.
- *
- * GET https://api.nasa.gov/neo/rest/v1/feed
- *
- * @param startDate - YYYY-MM-DD start of the window (max 7-day range)
- * @param endDate   - YYYY-MM-DD end of the window
- * @returns Flat array of normalised asteroids sorted by closestApproachDate
- *          ascending. Returns an empty array on failure.
- */
 export async function fetchNeoFeed(
   startDate: string,
   endDate:   string
 ): Promise<NeoWsAsteroid[]> {
   try {
     const { data } = await axios.get<NeoWsFeedResponse>(`${BASE_URL}/feed`, {
-      params: { start_date: startDate, end_date: endDate, api_key: API_KEY },
+      params: { start_date: startDate, end_date: endDate },
       timeout: TIMEOUT,
     });
 
@@ -110,24 +89,13 @@ export async function fetchNeoFeed(
 
 // ── 2. fetchNeoLookup ─────────────────────────────────────────────────────────
 
-/**
- * Fetch full details for a single asteroid by its SPK-ID.
- *
- * GET https://api.nasa.gov/neo/rest/v1/neo/{asteroid_id}
- *
- * @param asteroidId - The SPK-ID of the asteroid
- * @returns Full raw asteroid object, or null on failure.
- */
 export async function fetchNeoLookup(
   asteroidId: string
 ): Promise<NeoWsRawAsteroid | null> {
   try {
     const { data } = await axios.get<NeoWsRawAsteroid>(
       `${BASE_URL}/neo/${asteroidId}`,
-      {
-        params:  { api_key: API_KEY },
-        timeout: TIMEOUT,
-      }
+      { timeout: TIMEOUT }
     );
     return data;
   } catch (err: unknown) {
@@ -148,19 +116,10 @@ export async function fetchNeoLookup(
 
 // ── 3. fetchNeoBrowse ─────────────────────────────────────────────────────────
 
-/**
- * Fetch a paginated list of all tracked near-Earth asteroids.
- *
- * GET https://api.nasa.gov/neo/rest/v1/neo/browse
- *
- * @param page - Zero-based page index (default 0)
- * @returns NeoWsBrowseResult with asteroid summaries and pagination info.
- *          Returns an empty result on failure.
- */
 export async function fetchNeoBrowse(page = 0): Promise<NeoWsBrowseResult> {
   try {
     const { data } = await axios.get<NeoWsBrowseResponse>(`${BASE_URL}/neo/browse`, {
-      params:  { api_key: API_KEY, page },
+      params:  { page },
       timeout: TIMEOUT,
     });
 
