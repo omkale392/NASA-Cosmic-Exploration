@@ -3,19 +3,12 @@
   "buildCommand": "npm install && cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": null,
-  "builds": [
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node",
-      "config": { "includeFiles": ["backend/src/**"] }
-    }
-  ],
+  "functions": {
+    "api/index.ts": { "maxDuration": 30, "memory": 512 }
+  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.ts" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
-  "env": { "NODE_ENV": "production" },
-  "functions": {
-    "api/index.ts": { "maxDuration": 30, "memory": 512 }
-  }
+  "env": { "NODE_ENV": "production" }
 }
