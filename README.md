@@ -65,7 +65,7 @@
 
 **NASA Mission Control** is a production-grade, full-stack web application that surfaces live NASA data through two flagship modules — the **Astronomy Picture of the Day (APOD)** and the **Near-Earth Object Web Service (NeoWS)** — all wrapped in a stunning animated cosmic UI with an integrated **AI Mission Briefing engine** powered by **Meta Llama 3.3-70B** via **Groq's ultra-fast inference API**.
 
-This is not a tutorial project. Every engineering decision — from the Vercel monorepo wiring, the Express security middleware stack, the abort-safe React hooks, to the physics-based CSS canvas animations — reflects real-world, senior-level craftsmanship. Data flows from NASA's official APIs through a hardened Express backend, gets normalised and typed end-to-end in TypeScript, and renders in a glass-morphism React UI with Framer Motion animations.
+From the Vercel monorepo wiring, the Express security middleware stack, the abort-safe React hooks, to the physics-based CSS canvas animations. Data flows from NASA's official APIs through a hardened Express backend, gets normalised and typed end-to-end in TypeScript, and renders in a glass-morphism React UI with Framer Motion animations.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -589,6 +589,7 @@ NODE_ENV=development
 
 ```bash
 cd frontend
+npm install
 npm run test
 ```
 
@@ -601,6 +602,7 @@ npm run test
 
 ```bash
 cd backend
+npm install
 npm test
 ```
 
@@ -634,7 +636,7 @@ Framework:        Other (None)
 ```
 NASA_API_KEY   → Production, Preview, Development
 GROQ_API_KEY   → Production, Preview, Development
-CORS_ORIGIN    → https://<your-project>.vercel.app
+CORS_ORIGIN    → https://<nasa-cosmic-exploration>.vercel.app
 VITE_API_URL   → /api
 NODE_ENV       → production
 ```
@@ -660,7 +662,7 @@ npm  >= 10.x
 ### Clone & Install
 
 ```bash
-git clone https://github.com/your-username/nasa-mission-control.git
+git clone https://github.com/omkale392/nasa-mission-control.git
 cd nasa-mission-control
 npm run install:all
 ```
